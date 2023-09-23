@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "nft/http_rule_fix/api.proto";
+
+option go_package = "./;pb";
+
+package nft.watcher.v1;
+
+service NftWatcherService {
+  rpc GetNftEvents(google.protobuf.Empty) returns (stream NftEvent) {
+    option (google.api.http) = {
+      get: "/nft/watcher/v1/getNftEvents", // WS or Long-Pooling
+    };
+  }
+  rpc GetAllNftEvents(google.protobuf.Empty) returns (GetAllNftEventsResponse) {
+    option (google.api.http) = {
+      get: "/nft/watcher/v1/getAllNftEvents",
+    };
+  }
+  rpc CreateNftCollection(CreateNftCollectionRequest) returns (CreateNftCollectionResponse) {
+    option (google.api.http) = {
+      post: "/nft/watcher/v1/createNftCollection",
+      body: "*"
+    };
+  }
+  rpc MintNft(MintNftRequest) returns (MintNftResponse) {
+    option (google.api.http) = {
+      post: "/nft/watcher/v1/mintNft",
+      body: "*"
+    };
+  }
+}
+
+message MintNftResponse {
+  string hash = 1;
+}
+
+message MintNftRequest {
+  string collection_address = 1;
+  string recipient_address = 2;
+  string tokenId = 3;
+  string tokenUri = 4;
+}
+
+message CreateNftCollectionRequest {
+  string name = 1;
+  string symbol = 2;
+}
+
+message CreateNftCollectionResponse {
+  string hash = 1;
+  string collection_address = 2;
+}
+
+message GetAllNftEventsResponse {
+  repeated NftEvent events = 1;
+}
+
+message NftEvent {
+  oneof event {
+    Minted mint = 1;
+    CollectionCreated collection = 2;
+  }
+}
+
+message Minted {
+  string collection_address = 1;
+  string recipient_address = 2;
+  string tokenId = 3;
+  string tokenUri = 4;
+}
+
+message CollectionCreated {
+  string collection_address = 1;
+  string name = 2;
+  string symbol = 3;
+}

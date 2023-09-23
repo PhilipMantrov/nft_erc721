@@ -1,0 +1,108 @@
+<p>
+  <mat-toolbar color="primary">
+    <span>NFC_ERC721</span>
+  </mat-toolbar>
+</p>
+
+<mat-card>
+  <mat-card-content>
+    <div class="example-container">
+      <mat-form-field floatLabel="always">
+        <mat-label>Name</mat-label>
+        <input matInput [(ngModel)]="createCollectionRequest.name" type="text">
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always">
+        <mat-label>Symbol</mat-label>
+        <input matInput [(ngModel)]="createCollectionRequest.symbol" type="text">
+      </mat-form-field>
+    </div>
+
+    <button mat-raised-button color="primary" (click)="createNftCollection()">Create</button>
+
+    <p *ngIf="createCollectionResponse.hash">Hash: {{ createCollectionResponse.hash }}</p>
+    <p *ngIf="createCollectionResponse.collectionAddress">Collection Address: {{ createCollectionResponse.collectionAddress }}</p>
+
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-content>
+    <div>
+      <mat-form-field floatLabel="always">
+        <mat-label>Collection Address</mat-label>
+        <input matInput [(ngModel)]="mintNftRequest.collectionAddress" type="text">
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always">
+        <mat-label>Recipient Address</mat-label>
+        <input matInput [(ngModel)]="mintNftRequest.recipientAddress" type="text">
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always">
+        <mat-label>Token Id</mat-label>
+        <input matInput [(ngModel)]="mintNftRequest.tokenId" type="text">
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always">
+        <mat-label>Token Uri</mat-label>
+        <input matInput [(ngModel)]="mintNftRequest.tokenUri" type="text">
+      </mat-form-field>
+    </div>
+
+    <button mat-raised-button color="primary" (click)="mintNft()" >Mint</button>
+
+    <p *ngIf="mintNftResponse.hash">Hash: {{ mintNftResponse.hash }}</p>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-content>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+      <ng-container matColumnDef="event">
+        <th mat-header-cell *matHeaderCellDef> Event</th>
+        <td mat-cell *matCellDef="let element"> {{!!element.mint?.collectionAddress ? "TokenMinted" : "CollectionCreated"}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="collection_address">
+        <th mat-header-cell *matHeaderCellDef> Collection Address</th>
+        <td mat-cell *matCellDef="let element"> {{element.mint?.collectionAddress ? element.mint.collectionAddress : element.collection.collectionAddress}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Name</th>
+        <td mat-cell *matCellDef="let element"> {{element.collection?.name ? element.collection?.name : ""}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="symbol">
+        <th mat-header-cell *matHeaderCellDef> Symbol</th>
+        <td mat-cell *matCellDef="let element"> {{element.collection?.symbol ? element.collection.symbol : ""}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="recipient_address">
+        <th mat-header-cell *matHeaderCellDef> Recipient Address</th>
+        <td mat-cell *matCellDef="let element"> {{element.mint?.recipientAddress ? element.mint.recipientAddress : ""}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="tokenId">
+        <th mat-header-cell *matHeaderCellDef> TokenId</th>
+        <td mat-cell *matCellDef="let element"> {{element.mint?.tokenId ? element.mint.tokenId : ""}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="tokenUri">
+        <th mat-header-cell *matHeaderCellDef> TokenUri</th>
+        <td mat-cell *matCellDef="let element">
+          <img class="nft-img" src="{{element.mint?.tokenUri ? element.mint.tokenUri : 'https://goerli.etherscan.io/images/main/nft-placeholder.svg'}}">
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </mat-card-content>
+</mat-card>
+
+<div class="my-overlay" *ngIf="showOverlay">
+  <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+</div>

@@ -1,0 +1,14 @@
+{
+  "name": "nft_erc721",
+  "version": "0.0.1",
+  "author": "PhilipMantrov",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "protoc": "buf generate"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "^1.26.1",
+    "ts-proto": "^1.157.0"
+  }
+}

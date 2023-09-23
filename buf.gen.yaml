@@ -1,0 +1,42 @@
+version: v1
+managed:
+  enabled: true
+plugins:
+  - plugin: go
+    out: backend/grpc-gateway/nft/pb
+    strategy: all
+  - plugin: go-grpc
+    out: backend/grpc-gateway/nft/pb
+    strategy: all
+  - plugin: openapiv2
+    out: backend/grpc-gateway/nft/openapi
+    opt:
+      - use_go_templates=true
+      - omit_enum_default_value=true
+    strategy: all
+  - plugin: grpc-gateway
+    out: backend/grpc-gateway/nft/pb
+    opt:
+      - logtostderr=true
+      - generate_unbound_methods=true
+    strategy: all
+  - plugin: ts_proto
+    out: backend/definitions/generated
+    opt:
+      - env=node
+      - snakeToCamel=false
+      - esModuleInterop=true
+      - nestJs=true
+      - useDate=true
+      - useOptionals=messages
+      - addGrpcMetadata=true
+      - returnObservable=true
+      - forceLong=bigint
+    strategy: all
+  - plugin: ts_proto
+    out: frontend/definitions/generated
+    opt:
+      - snakeToCamel=true
+      - useDate=true
+      - useOptionals=messages
+    strategy: all
