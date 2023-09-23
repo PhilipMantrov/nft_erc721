@@ -1,20 +1,33 @@
 import { expect } from "chai";
-import hre, { ethers } from "hardhat";
-import { time } from "@nomicfoundation/hardhat-toolbox/network-helpers";
+import { ethers } from "hardhat";
+import { NFTCollection__factory } from "../../typechain-types";
+import { from } from "rxjs";
 
-describe("NFTCollection", function () {
-  it("Should set the right unlockTime", async function () {
-    const lockedAmount = 1_000_000_000;
-    const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-    const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
+describe("NFTCollection", function() {
+  let nftCollection: NFTCollection__factory;
+  let contractAddress: string;
+  from(ethers.getContractFactory("NFTCollection")).subscribe(contract => nftCollection = contract);
 
-    // deploy a lock contract where funds can be withdrawn
-    // one year in the future
-    const nftCollection = await ethers.deployContract("NFTCollection", [unlockTime], {
-      value: lockedAmount,
-    });
 
-    // assert that the value is correct
-    expect(await nftCollection.unlockTime()).to.equal(unlockTime);
+  it("Should deployed", async function() {
+    const nft = await nftCollection.deploy("TestCollection", "TST");
+
+    const tx = await nft.deploymentTransaction();
+    const confirmedTx = await tx.wait(8);
+    contractAddress = await nft.getAddress();
+
+
+    expect(confirmedTx).to.be.an("object");
+    expect(confirmedTx.hash).to.be.an("string");
+  });
+
+  it("Should Minted", async function() {
+    const nft = await ethers.getContractAt("NFTCollection", contractAddress);
+    const tx = await nft.safeMint("0xa9bb29CeAba32302BCC9Cb33d6CF2d368Fd0211a", "1", "https://i.pinimg.com/564x/ca/ce/1d/cace1d24d16101782878da47bc4632bb.jpg");
+    const confirmedTx = await tx.wait(8);
+
+
+    expect(confirmedTx).to.be.an("object");
+    expect(confirmedTx.hash).to.be.an("string");
   });
 });
